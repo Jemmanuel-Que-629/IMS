@@ -31,6 +31,10 @@ $active = function(string $target) use ($basePath, $currentPath) {
 			<i class="bi bi-arrow-left-right"></i>
 			<span class="text">Stock History</span>
 		</a>
+		<a class="nav-link <?= $active('/views/logs.php') ?>" href="<?= $appUrl ?>/views/logs.php" data-bs-toggle="tooltip" data-bs-placement="right" title="Logs">
+			<i class="bi bi-clock-history"></i>
+			<span class="text">Logs</span>
+		</a>
 		<a class="nav-link mt-5" href="<?= $appUrl ?>/backend/auth/logout.php" data-bs-toggle="tooltip" data-bs-placement="right" title="Logout">
 			<i class="bi bi-box-arrow-right"></i>
 			<span class="text">Logout</span>

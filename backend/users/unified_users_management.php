@@ -10,6 +10,7 @@ try {
   require_once __DIR__ . '/../../database/db_connection.php';
   $config = require __DIR__ . '/../../config/app.php';
   require_once __DIR__ . '/../../vendor/autoload.php';
+  require_once __DIR__ . '/../../helpers/logger.php';
 } catch (Throwable $e) {
   $traceData = method_exists($e,'getTrace') ? $e->getTrace() : [];
   echo json_encode([
@@ -111,6 +112,8 @@ function get_user(PDO $pdo, $config) {
   if (!$row) json_err('User not found', build_debug('get_user_not_found', $config, ['user_id' => $id]));
   // Add computed full name for convenience
   $row['full_name'] = build_full_name($row['first_name'] ?? '', $row['middle_name'] ?? '', $row['last_name'] ?? '', $row['extension'] ?? '');
+  // Log view
+  log_action($pdo, 'view', 'user', $id, ['username' => $row['username'], 'email' => $row['email']]);
   json_ok($row, 'User fetched', build_debug('get_user_ok', $config, ['user_id' => $id]));
 }
 
@@ -188,7 +191,13 @@ function create_user(PDO $pdo, $config) {
   }
 
   $msg = 'User created';
-  if (!$sendOk) { $msg .= ' (email failed to send)'; }
+    if (!$sendOk) { $msg .= ' (email failed to send)'; }
+  // Log create
+  log_action($pdo, 'create', 'user', $newId, [
+    'username' => $username,
+    'email' => $email,
+    'role_id' => $role_id
+  ]);
   json_ok(
     [
       'user_id' => $newId,
@@ -240,6 +249,13 @@ function update_user(PDO $pdo, $config) {
     $stmt->execute([$username,$email,$role_id,$first,$middle,$last,$ext,$id]);
   }
 
+  // Log update
+  log_action($pdo, 'update', 'user', $id, [
+    'username' => $username,
+    'email' => $email,
+    'role_id' => $role_id
+  ]);
+
   json_ok([
       'user_id' => $id,
       'username' => $username,
@@ -252,5 +268,7 @@ function archive_user(PDO $pdo, $config) {
   if ($id <= 0) json_err('Invalid user', build_debug('archive_invalid_id', $config));
   $stmt = $pdo->prepare('DELETE FROM users WHERE user_id = ?');
   $stmt->execute([$id]);
+  // Log archive (destructive)
+  log_action($pdo, 'archive', 'user', $id, 'User deleted (archive)');
   json_ok(['user_id' => $id], 'User archived', build_debug('archive_user_ok', $config, ['user_id' => $id]));
 }

@@ -1,0 +1,60 @@
+/* logs page specific styles */
+
+.products-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.product-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* SEARCH BOX */
+
+.dataTables_wrapper .dataTables_filter input {
+  border-radius: 8px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  border-radius: 8px !important;
+}
+
+div.dataTables_filter {
+  text-align: right !important;
+}
+
+div.dataTables_filter label {
+  width: auto !important;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+div.dataTables_filter input {
+  width: 200px !important;
+  margin-left: 0;
+}
+
+/* SHOW ENTRIES */
+
+div.dataTables_length {
+  white-space: nowrap; /* keep text and select on same line */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+div.dataTables_length label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+div.dataTables_length select {
+  width: auto;
+  display: inline-block;
+}

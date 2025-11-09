@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../config/app.php';
+require_once __DIR__ . '/../../helpers/logger.php';
 
 // Set JSON header for AJAX responses
 header('Content-Type: application/json');
@@ -31,7 +32,7 @@ if (isset($_POST['login'])) {
     
     try {
     // Load database connection
-        require_once __DIR__ . '/../../database/db_connection.php';
+    require_once __DIR__ . '/../../database/db_connection.php';
         // DEVELOPMENT DIAGNOSTICS: verify active DB and user count
         $cfg = require __DIR__ . '/../../config/app.php';
         $connected_db = null;
@@ -95,6 +96,11 @@ if (isset($_POST['login'])) {
                 'timestamp' => date('Y-m-d H:i:s')
             ]));
             
+            // Log success login
+            if (isset($pdo)) {
+                log_action($pdo, 'login_success', 'auth', (int)$user['user_id'], [ 'username' => $user['username'] ]);
+            }
+
             // Return success response
             echo json_encode([
                 'success' => true,
@@ -125,6 +131,11 @@ if (isset($_POST['login'])) {
                 'reason' => 'Invalid credentials',
                 'timestamp' => date('Y-m-d H:i:s')
             ]));
+            // Log failed login attempt
+            if (isset($pdo)) {
+                $entityId = ($user_found && isset($user['user_id'])) ? (int)$user['user_id'] : null;
+                log_action($pdo, 'login_failed', 'auth', $entityId, [ 'attempted' => $username ]);
+            }
             
             echo json_encode([
                 'success' => false,

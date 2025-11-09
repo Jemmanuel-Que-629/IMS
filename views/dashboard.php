@@ -1,4 +1,5 @@
 <?php
+$pageTitle = "Dashboard - IMS";
 session_start();
 require_once __DIR__ . '/../helpers/auth.php';
 require_role(['admin']);

@@ -1,5 +1,9 @@
 <?php
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 /**
  * Check if user is logged in
  * @return bool
@@ -34,10 +38,11 @@ function require_login() {
  */
 function require_role($allowed_roles) {
     require_login();
-    
+
     if (!in_array($_SESSION['user_role'], $allowed_roles)) {
         $_SESSION['error_message'] = 'You do not have permission to access this page.';
-        header('Location: ' . get_base_url() . '/views/dashboard.php');
+        // redirect to a safe page to prevent loop
+        header('Location: ' . get_base_url() . '/views/errors/403.php');
         exit;
     }
 }
@@ -69,7 +74,7 @@ function get_logged_in_user() {
     if (!is_logged_in()) {
         return null;
     }
-    
+
     return [
         'user_id' => $_SESSION['user_id'] ?? null,
         'username' => $_SESSION['username'] ?? null,
